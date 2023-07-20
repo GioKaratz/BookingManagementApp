@@ -1,0 +1,142 @@
+﻿@model BookingManagementApp.Models.Booking
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Booking</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FamilyMembers" class="control-label"></label>
+                <input asp-for="FamilyMembers" class="form-control" id="FamilyMembers" />
+                <span asp-validation-for="FamilyMembers" class="text-danger"></span>
+                <span class="text-danger" id="familyMembersErrorMessage"></span> <!-- Error message placeholder -->
+            </div>
+            <div class="form-group">
+                <input type="hidden" asp-for="ReservationDate" id="ReservationDateHidden" />
+                <input asp-for="ReservationDate" class="form-control" id="ReservationDate" style="display:none;" />
+                <span asp-validation-for="ReservationDate" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="ArrivalDate" class="control-label"></label>
+                <input asp-for="ArrivalDate" class="form-control" />
+                <span asp-validation-for="ArrivalDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DepartureDate" class="control-label"></label>
+                <input asp-for="DepartureDate" class="form-control" />
+                <span asp-validation-for="DepartureDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="VisitDays" class="control-label"></label>
+                <input asp-for="VisitDays" class="form-control" />
+                <span asp-validation-for="VisitDays" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            // Function to calculate the difference between two dates in days
+            function calculateDateDifference(startDate, endDate) {
+                const diffInMilliseconds = Math.abs(startDate - endDate);
+                const oneDayInMilliseconds = 1000 * 60 * 60 * 24;
+                const differenceInDays = Math.floor(diffInMilliseconds / oneDayInMilliseconds);
+                return differenceInDays;
+            }
+
+            // Function to validate that DepartureDate is after ArrivalDate
+            function validateDepartureDate() {
+                const arrivalDate = new Date($("#ArrivalDate").val());
+                const departureDate = new Date($("#DepartureDate").val());
+
+                if (!isNaN(arrivalDate) && !isNaN(departureDate)) {
+                    if (departureDate <= arrivalDate) {
+                        $("#DepartureDate").val(""); // Clear the invalid value
+                        $("#DepartureDate").addClass("is-invalid"); // Add invalid class for styling
+                        $("#departureDateErrorMessage").text("Departure date must be after arrival date.");
+                        return false;
+                    }
+                }
+
+                $("#DepartureDate").removeClass("is-invalid"); // Remove invalid class if valid
+                $("#departureDateErrorMessage").text(""); // Clear error message
+                return true;
+            }
+
+            // Function to autofill ReservationDate with the current date
+            function autofillCurrentDate() {
+                const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in 'yyyy-mm-dd' format
+                $("#ReservationDateHidden").val(currentDate); // Set the value of the hidden field
+                $("#ReservationDate").val(currentDate); // Set the value of the visible input
+            }
+
+            // Function to validate FamilyMembers
+            function validateFamilyMembers() {
+                const familyMembers = parseInt($("#FamilyMembers").val());
+
+                if (isNaN(familyMembers) || familyMembers <= 0) {
+                    $("#FamilyMembers").val(""); // Clear the invalid value
+                    $("#FamilyMembers").addClass("is-invalid"); // Add invalid class for styling
+                    $("#familyMembersErrorMessage").text("Family members must be a positive number.");
+                    return false;
+                }
+
+                $("#FamilyMembers").removeClass("is-invalid"); // Remove invalid class if valid
+                $("#familyMembersErrorMessage").text(""); // Clear error message
+                return true;
+            }
+
+            // Event listener to calculate and autofill the VisitDays field when ArrivalDate or DepartureDate changes
+            $("#ArrivalDate, #DepartureDate").change(function () {
+                const visitDays = calculateDateDifference(new Date($("#ArrivalDate").val()), new Date($("#DepartureDate").val()));
+                $("#VisitDays").val(visitDays);
+                validateDepartureDate(); // Validate the DepartureDate
+            });
+
+            // Event listener for FamilyMembers input
+            $("#FamilyMembers").change(function () {
+                validateFamilyMembers(); // Validate the FamilyMembers input
+            });
+
+            // Event listener for form submission
+            $("form").submit(function (event) {
+                if (!validateDepartureDate() || !validateFamilyMembers()) {
+                    event.preventDefault(); // Prevent form submission if any validation fails
+                }
+            });
+
+            // Call the autofillCurrentDate function to set the ReservationDate with the current date
+            autofillCurrentDate();
+        });
+    </script>
+}
