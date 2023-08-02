@@ -30,6 +30,7 @@ Take advantage of the validation to ensure accurate data entry.
 Remember to log out and secure the application in production environments.
 
 **How to use**  
+
 Clone this repository to your local machine  
 Set up the database connection:  
 Edit the appsettings.json file located in the BookingManagementApp project to specify your SQL Server connection string  
