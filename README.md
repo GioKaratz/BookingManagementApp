@@ -33,9 +33,11 @@ Remember to log out and secure the application in production environments.
 
 Clone this repository to your local machine  
 Set up the database connection:  
-Edit the appsettings.json file located in the BookingManagementApp project to specify your SQL Server connection string  
+Edit the **appsettings.json** file located in the BookingManagementApp project to specify your SQL Server connection string  
 To create and apply the initial database schema, run the following command in the BookingManagementApp project:  
-dotnet Update - Database
+ ```bash
+ dotnet Update - Database
+```
 
 **Contributions**
 
